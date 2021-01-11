@@ -2,7 +2,7 @@ name: appsync_subscription
 description: A plugin abstract subscribe to AppSync subscription topics.
 repository: https://github.com/mhd999/appsync-subscription
 
-version: 1.0.0
+version: 1.0.2
 
 environment:
   sdk: ">=2.7.0 <3.0.0"

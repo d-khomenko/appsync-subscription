@@ -25,7 +25,7 @@ import 'package:appsync_subscription/appsync_subscription.dart';
 ```dart
 
 final endPoint = "https://yourappsync.appsync-api.region.amazonaws.com/graphql";
-final apiKey = "you-api-key";
+final apiKey = "your-api-key";
 final port = 443;
 
 class _MyHomePageState extends State<MyHomePage> {
