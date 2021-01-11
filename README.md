@@ -1,0 +1,1 @@
+# Flutter AppSync subscription Plugin
