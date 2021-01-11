@@ -24,7 +24,7 @@ import 'package:appsync_subscription/appsync_subscription.dart';
 
 ```dart
 
-final endPoint = "https://yourappsync.appsync-api.eu-west-1.amazonaws.com/graphql";
+final endPoint = "https://yourappsync.appsync-api.region.amazonaws.com/graphql";
 final apiKey = "you-api-key";
 final port = 443;
 
@@ -35,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     final query = {
       'query': '''subscription {
-          onPyblishResult(id: "12345") {
+          onPublishResult(id: "12345") {
             id
           }
         }
