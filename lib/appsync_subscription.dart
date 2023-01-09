@@ -13,38 +13,37 @@ class Subscription {
 
   Subscription(this._endpoint, this._apiKey, this._port);
 
-
-  subscripeToSubscription(Map<String, String> query, Function callBackFunc) async {
-
-    try {    
+  subscripeToSubscription(
+      Map<String, String> query, Function callBackFunc) async {
+    try {
       var data = await http.post(
-        '$_endpoint',
+        Uri.parse('$_endpoint'),
         headers: {
           'x-api-key': _apiKey,
           'Content-Type': 'application/json',
         },
         body: json.encode(query),
-        );
-              
+      );
+
       Map<String, dynamic> response =
           jsonDecode(data.body) as Map<String, dynamic>;
 
       var server;
       var clientIdentifier;
       var topic;
-      topic= response['extensions']['subscription']['mqttConnections'][0]
-                          ['topics'][0];
-
+      topic = response['extensions']['subscription']['mqttConnections'][0]
+          ['topics'][0];
 
       for (var m in response['extensions']['subscription']['mqttConnections']) {
         if ((m['topics'] as List<dynamic>).contains(topic)) {
-          server=m['url'];  
-          clientIdentifier=m['client'];
+          server = m['url'];
+          clientIdentifier = m['client'];
           break;
         }
       }
 
-      final client = MqttServerClient(server.toString(),  clientIdentifier.toString());
+      final client =
+          MqttServerClient(server.toString(), clientIdentifier.toString());
       client.port = _port;
       client.logging(on: false);
       client.keepAlivePeriod = 30;
@@ -56,19 +55,21 @@ class Subscription {
       try {
         await client.connect();
         client.subscribe(topic.toString(), MqttQos.atMostOnce);
-
-        client.updates
-            .listen((List<MqttReceivedMessage<MqttMessage>> c) {
-          final MqttPublishMessage recMess =
-              c[0].payload as MqttPublishMessage;
+        if (client.updates == null) {
+          throw Exception("client.updates are null ");
+        }
+        client.updates!.listen((List<MqttReceivedMessage<MqttMessage>> c) {
+          final MqttPublishMessage recMess = c[0].payload as MqttPublishMessage;
+          if (recMess.payload.message == null) {
+            throw Exception("message is null");
+          }
           final String results = MqttPublishPayload.bytesToStringAsString(
-              recMess.payload.message);
+              recMess.payload.message!);
 
           client.disconnect();
-   
+
           return callBackFunc(results);
         });
-
       } on NoConnectionException catch (e) {
         print('client exception: $e');
         client.disconnect();
@@ -76,14 +77,11 @@ class Subscription {
         print('socket exception: $e');
         client.disconnect();
       }
-
     } catch (e) {
       print(e);
     }
   }
-
 }
-
 
 void onConnected() {
   print('Client connection was sucessful');
